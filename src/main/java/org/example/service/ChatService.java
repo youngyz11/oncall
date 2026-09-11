@@ -41,7 +41,7 @@ public class ChatService {
     @Autowired(required = false)  // Mock 模式下才注册，所以设置为 optional,真实环境通过mcp配置注入
     private QueryLogsTools queryLogsTools;
 
-    @Autowired
+    @Autowired(required = false)  // MCP 禁用时该 Bean 不存在
     private ToolCallbackProvider tools;
 
     @Value("${spring.ai.dashscope.api-key}")
@@ -134,6 +134,9 @@ public class ChatService {
      * 获取工具回调列表，mcp服务提供的工具
      */
     public ToolCallback[] getToolCallbacks() {
+        if (tools == null) {
+            return new ToolCallback[0];  // MCP 禁用时返回空数组
+        }
         return tools.getToolCallbacks();
     }
 
@@ -141,6 +144,10 @@ public class ChatService {
      * 记录可用工具列表：mcp服务提供的工具
      */
     public void logAvailableTools() {
+        if (tools == null) {
+            logger.info("MCP 未启用，无 MCP 工具可用");
+            return;
+        }
         ToolCallback[] toolCallbacks = tools.getToolCallbacks();
         logger.info("可用工具列表:");
         for (ToolCallback toolCallback : toolCallbacks) {
