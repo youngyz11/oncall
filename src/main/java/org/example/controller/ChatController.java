@@ -46,7 +46,7 @@ public class ChatController {
     @Autowired
     private ChatService chatService;
 
-    @Autowired
+    @Autowired(required = false)  // MCP 禁用时该 Bean 不存在
     private ToolCallbackProvider tools;
 
     private final ExecutorService executor = Executors.newCachedThreadPool();
